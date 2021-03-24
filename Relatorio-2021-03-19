@@ -1,0 +1,37 @@
+*************************************************
+*             Inicio da Analise                 *
+*************************************************
+Faltam ser Verificadas ................:[1]
+Hora .........: sex 19 mar 2021 21:58:16 -03
+Dominio Que Sera  Analisado Pela Ferramenta:
+
+-------->[37;5m  limites.digital  [0m
+Dominio...............: [limites.digital]
+Registro do Dominio.....: [[42;1;37m REGISTRO ATIVO   [0m ]
+==============================================
+
+
+IP do Dominio.. ......: [68.168.220.235] e [Up1]
+HTTP..................: [302]
+Redirecionamento Ativo: [SIM]
+Redirecionamento......: http://limites.digital/cgi-sys/suspendedpage.cgi
+ICMP.Redirecionamento.: [limites.digital] [68.168.220.235]  [Up2]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [webmail.limites.digital]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [webdisk.limites.digital]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [mail.limites.digital]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [cpcontacts.limites.digital]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [cpcalendars.limites.digital]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [cpanel.limites.digital]
+[01;32m Sub_Dominio..........:[01;37m [UP..] [68.168.220.235] [www.limites.digital]
+Dominio Criado em.....: [ 2020-12-03T19]
+Dominio Expira em.....: [ 2021-12-03T19]
+E-mail................: [ abuse@name.com]
+View Port..User-Agent.: [    <meta name="viewport" content="width=device-width, initial-scale=1.0">]
+Referencia Encontrada : [NAO ENCONTRADO]
+*************************************************
+*             ---- Fim da Analise ----          *
+*************************************************
+
+
+
+

@@ -1,0 +1,61 @@
+
+                                             for fqdn in  $(cat novo2)
+                                                do  
+
+
+                                                      readarray=E
+                                                      readarray=F
+                                                      readarray=G
+                                                      readarray=H
+                                                      resp1=$(echo "$fqdn" | cut -d "."  -f1 )
+                                                      resp2=$(echo "$fqdn" | cut -d "."  -f2 )
+                                                      resp3=$(echo "$fqdn" | cut -d "."  -f3 )
+                                                      resp4=$(echo "$fqdn" | cut -d "."  -f4 )
+                                                      E[0]=$resp1
+                                                      F[0]=$resp2
+                                                      G[0]=$resp3
+                                                      H[0]=$resp4
+                                                      K1=${#resp1}
+                                                      K2=${#resp2}
+                                                      K3=${#resp3}
+                                                      K4=${#resp4}
+                                                    #  if [ $Q4 = 0 ]
+                                                     #fluxo=("${A[@]}"".""${b[@]}")
+                                                     fluxo1=("${E[@]}")
+                                                     fluxo2=("${F[@]}")
+                                                     fluxo3=("${G[@]}")
+                                                     fluxo4=("${H[@]}")
+                                                    
+                                                    if [[ $fqdn =~ ".ga" ]] || [[ $fqdn =~ ".tk" ]] || [[ $fqdn =~ ".ml" ]] || [[ $fqdn =~ ".cf" ]]
+                                                       then
+                                                        echo $fqdn |sort |uniq >> frenom
+                                                       else
+                                                        echo "nao encontrei nada"
+                                                    fi
+                                                     #var=${tudoQ3[@]}
+                                                     
+                                  done   
+                                  cat frenom |sort|uniq >frenom_fim
+ 
+
+                             for free in  $(cat frenom_fim)
+                               do  
+                                 #sleep 300
+                                 echo "inicio"
+                                 cap_whois=$(whois $free)
+                                 if [[ $cap_whois =~ "cancelled" ]]  
+                                    then
+                                        echo " $free --->  dominio cancelado"
+                                        echo $cap_whois
+                                    else
+                                        if [[ $cap_whois =~ "Domain name" ]]
+                                           then
+                                              echo " $free --->  ativo"
+                                              echo $cap_whois
+                                           else
+                                             echo " $free --->  nao foi encontrado."
+                                             echo $cap_whois
+
+                                        fi
+                                 fi
+                               done

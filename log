@@ -1,0 +1,38 @@
+[91m
+                 ____        _     _ _     _   _____
+                / ___| _   _| |__ | (_)___| |_|___ / _ __
+                \___ \| | | | '_ \| | / __| __| |_ \| '__|
+                 ___) | |_| | |_) | | \__ \ |_ ___) | |
+                |____/ \__,_|_.__/|_|_|___/\__|____/|_|[0m[93m
+
+                # Coded By Ahmed Aboul-Ela - @aboul3la
+    
+[94m[-] Enumerating subdomains now for stonelimites.digital[0m
+[93m[-] verbosity is enabled, will show the subdomains results in realtime[0m
+[92m[-] Searching now in Baidu..[0m
+[92m[-] Searching now in Yahoo..[0m
+[92m[-] Searching now in Google..[0m
+[92m[-] Searching now in Bing..[0m
+[92m[-] Searching now in Ask..[0m
+[92m[-] Searching now in Netcraft..[0m
+[92m[-] Searching now in DNSdumpster..[0m
+[92m[-] Searching now in Virustotal..[0m
+[92m[-] Searching now in ThreatCrowd..[0m
+[92m[-] Searching now in SSL Certificates..[0m
+[92m[-] Searching now in PassiveDNS..[0m
+[91m[!] Error: Virustotal probably now is blocking our requests[0m
+[91mSSL Certificates: [0mwww.stonelimites.digital
+[91mSSL Certificates: [0mcpanel.stonelimites.digital
+[91mSSL Certificates: [0mcpcalendars.stonelimites.digital
+[91mSSL Certificates: [0mcpcontacts.stonelimites.digital
+[91mSSL Certificates: [0mmail.stonelimites.digital
+[91mSSL Certificates: [0mwebdisk.stonelimites.digital
+[91mSSL Certificates: [0mwebmail.stonelimites.digital
+[93m[-] Total Unique Subdomains Found: 7[0m
+[92mwww.stonelimites.digital[0m
+[92mcpanel.stonelimites.digital[0m
+[92mcpcalendars.stonelimites.digital[0m
+[92mcpcontacts.stonelimites.digital[0m
+[92mmail.stonelimites.digital[0m
+[92mwebdisk.stonelimites.digital[0m
+[92mwebmail.stonelimites.digital[0m

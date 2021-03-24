@@ -1,0 +1,627 @@
+#!/bin/bash
+# versao beta
+
+clear
+while true
+  do
+   acesso=$(zenity --password --username)
+   usuario=$(echo "$acesso" | cut -d"|" -f1)
+   senha=$(echo "$acesso" | cut -d"|" -f2)
+   if [ "$usuario" == braga -a "$senha" == "123" ] 
+      then 
+       break;
+    fi
+done
+
+while true
+do
+    while true
+     do
+       clear
+       figlet No-Phishing
+        resp=$(zenity --list --title="NO-PHISHING" --column="Opção" --column="Descrição" --column="Ação" --text "Escolha uma Opcao" --width="500" --height="300"\
+                "1" "Consulta Full" "Roda todos os processos" \
+                "2" "Consulta individual" "Verifica dominios pontuais" \
+                "3" "Relatório" "Exibe relatorios de dominios e Subdominios " \
+                "4" "Lista de Dominios" "Inclusão / Aleração / Exclusão " \
+                "5" "Sair")
+
+                echo "$resp"
+
+	       if [ "$resp" = "1" ]
+        		 then
+                            minhadata=$(date +'%F')
+		            figlet No-Phishing
+		            linha=$(cat List_fqdn | wc -l)
+                            numlinha=$(cat List_fqdn | wc -l)
+          		    valor=$(cat List_fqdn)
+           		    dom=$(cat List_fqdn)
+           	            val=$(cat List_fqdn | wc -l)
+                    
+          	            readarray dom  < List_fqdn 
+
+                            i=0
+                            
+                            for b in  $(cat List_fqdn)
+                              do  
+                                       #sleep  60
+                                       let j=j+1
+                                       echo "# Dominio $j de $numlinha  sendo analisado..:  ${dom[$i]}"
+                                       direciona_url=$(timeout 1s curl -Isv  "$b" | egrep -i "Location|ocaticon" | cut -d ":" -f3 | cut -d "/" -f3,3 | sed "s/www.//g")
+                                       direciona_full=$(timeout 1s curl -Isv   "$b" | egrep -i "Location|ocaticon" |cut -d " " -f2)
+                                       direciona_url_ping=$(timeout 1s curl -Isv   "$b" | egrep -i "Location|ocaticon" | cut -d ":" -f3 | cut -d "/" -f3,3 | sed "s/www.//g")
+                                       status_http=$(timeout 1s curl -Isv   "$b" | head  -1 | awk -F " " '{print $2}')
+                                       status_whois=$(timeout 1s whois "$b" | egrep -i "clientHold|Clienthold|ClienteHold|clientehold")
+                                       data_creacao=$(timeout 1s whois "$b" | grep -i "Creation Date" | cut -d " " -f3)
+                                       email_abuse=$(timeout 1s whois "$b" | egrep   "abuse@|@" | cut -d ":" -f2 )
+                                       qualquercoisa=$(whois  "$b" | egrep -i "Creation|reation|abuse|status|atus|Freedom Registry|Freedom|gistere|ameserver")
+         			       location_http=$(timeout 1s curl -Isv   "$direciona_url" | head -1 | awk -F " " '{print $2}')
+         			       url_no_body=$(timeout 1s curl -Lsv "$b"  | grep "href=htt" | cut -d  ":" -f2 | sort)
+                                       data_expira=$(whois "$b" | grep -i "Expiry" | grep "xpir" | cut -d ":" -f2)
+                                       data_criado=$(whois "$b" | egrep -i "Creation Date:|created|creation" |cut -d ":" -f2 | head -1)
+                                       freemon=$(timeout 1s curl -sv "$b"  | grep "domain.dot.tk" | cut -d ":" -f2)
+                                       evidencia=$(timeout 1s curl -sLv "$b"   | grep "stone" | awk -F ' " ' '{print $1}' | head -5)
+                                       view=$(timeout 1s curl -Lsv "$b"   | grep "viewport")
+                                       notexist=$(whois "$b" | egrep -i "no match|not found" )
+				
+                                      if [[ -z $status_http ]] ; then  status_http="NAO ENCONTRADO" ; fi
+        			      if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ] ; then  ATIVO="SIM" ; else ATIVO="NAO" ; fi
+        			      if [[ -z $direciona_url ]] ; then direciona_url="NAO ENCONTRADO" ; fi
+        			      if [[ -z $evidencia ]] ; then evidencia="NAO ENCONTRADO" ; fi
+                                      if [[ -z $data_criado ]] ; then data_criado="NAO ENCONTRADO" ; fi
+                                      if [[ -z $data_expira ]] ; then data_expira="NAO ENCONTRADO" ; fi
+                                      if [[ -z $email_abuse ]] ; then email_abuse="NAO ENCONTRADO" ; fi
+                                      echo  -e "\n"
+				      echo "*************************************************" >> Relatorio-$minhadata
+                                      echo "*             Inicio da Analise                 *" >> Relatorio-$minhadata
+                                      echo "*************************************************" >> Relatorio-$minhadata
+                                      echo -e "Faltam ser Verificadas ................:[$linha]">> Relatorio-$minhadata
+                                      echo -e "Hora .........:" $(date)>> Relatorio-$minhadata
+         			      echo -e "Dominio Que Sera  Analisado Pela Ferramenta:\n">> Relatorio-$minhadata
+                                      echo  -e "-------->\033[37;5m  $b  \033[0m">> Relatorio-$minhadata
+                                      echo "___________________________________________"
+
+                                      if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ]
+                                          then
+                                             a="$direciona_url"
+                                      fi
+
+                                      if [[ "$status_http"  = "301" ]] || [[ "$status_http" = "302" ]] && [[ "$direciona_url" =~ [a-z] ]]
+                                         	 then
+				                      readarray=A
+                      				      readarray=b
+                                                      readarray=c
+                                                      readarray=d
+   						      resp1=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f1 )
+   						      resp2=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f2  )
+   						      resp3=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f3  )
+   						      resp4=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f4 )
+   						      A[0]=$resp1
+   						      b[0]=$resp2
+   						      c[0]=$resp3
+   						      d[0]=$resp4
+  						      Q1=${#resp1}
+  						      Q2=${#resp2}
+  						      Q3=${#resp3}
+  						      Q4=${#resp4}
+                                                      if [ $Q4 = 0 ]
+   							  then
+     								if [ $Q3 =  0 ]
+       									 then
+          						           	     tudoQ3=("${A[@]}"".""${b[@]}")
+          								     var=${tudoQ3[@]}
+                                                                          else
+          									if [ $Q2 -le 3 ]
+            									    then
+              										tudoQ2b=("${A[@]}"".""${b[@]}"".""${c[@]}")
+             										var=${tudoQ2b[@]}
+									            else
+             										tudoQ2a=("${b[@]}"".""${c[@]}")
+             										var=${tudoQ2a[@]}
+									        fi
+                                                               fi
+                                                            direciona_url=$var
+                                                          else
+                                                              tudoQ4=("${b[@]}"".""${c[@]}"".""${d[@]}")
+                                                              var=${tudoQ4[@]}
+                                                              direciona_url=$var
+                                                     fi
+                                                    # direciona_url=$var
+                                       fi
+
+                                       if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ]
+          		                then
+                                           #sleep 
+                                           status_whois=$(whois "$direciona_url" | egrep -i "clientHold|Clienthold|ClienteHold|clientehold" ) 
+                                           #sleep 
+                                           qualquercoisa=$(whois  "$direciona_url" | egrep -i "Creation|reation|abuse|status|atus|Freedom Registry|Freedom|gistere|ameserver")
+                                           #sleep 
+                                           notexist=$(whois "$direciona_url" | egrep -i "no match|not found" )
+
+              			           sub=$(/opt/Sublist3r/sublist3r.py -v -d $direciona_url >log 2>logerro)
+             			           sub=$(/opt/Sublist3r/sublist3r.py -v -n -d $direciona_url >Result_Sublist3r 2>logerro)
+          			        else
+              			            sub=$(/opt/Sublist3r/sublist3r.py -v -d $b >log 2>logerro)
+              			            sub=$(/opt/Sublist3r/sublist3r.py -v -n -d $b >Result_Sublist3r 2>logerro)
+        			       fi
+
+
+
+  			        # status_whois=$(whois "$direciona_url" | egrep -i "clientHold|Clienthold|ClienteHold|clientehold" ) 
+          			# qualquercoisa=$(whois  "$direciona_url" | egrep -i "Creation|reation|abuse|status|atus|Freedom Registry|Freedom|gistere|ameserver")      
+                                # notexist=$(whois "$direciona_url" | egrep -i "no match|not found" )
+
+
+				if [ -n "$notexist" ]
+          				 then
+             					 http="DOMINIO NAO ENCONTRADO"
+           				 else
+              					if [ -n "$status_whois" ]  #  se tiver informacao  é verdadeiro
+                 					then
+                    			                     http=" \033[41;1;37m TAKE DOWN \033[0m" #  acho o hold
+               					        else
+                				           if [ -n "$qualquercoisa" ] 
+                     					      then
+                                                                  http="\033[42;1;37m REGISTRO ATIVO   \033[0m "
+                                                              else
+                         					  http="DOMINIO NAO ENCONTRADO"
+                                                           fi
+                                                 fi
+                                fi
+
+
+                                if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ]
+                                  then
+                                    ip=$(timeout 2s ping -c 1 "$direciona_url"  | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1) >null
+                                    echo "Dominio...............: [$direciona_url]"  >> Relatorio-$minhadata
+                                    email_sub=$(whois "$direciona_url" | egrep   "abuse@|@")
+
+                                    if [[ "$ip" =~ [0-9] ]]
+                                        then
+                                            #echo "Dominio...............: [$direciona_url]"  >> Relatorio-$minhadata
+                                             #email_sub=$(whois "$direciona_url" | egrep   "abuse@|abuse|@")
+                                             timeout 2s ping -c 1 "$direciona_url" >null  
+                                              if [ $? -eq 0 ]
+                                                      then
+                                                          Stat="Up1"
+                                                       else
+                                                          Stat="Down"
+                                               fi
+                                       else 
+                                              ip="NAO ENCONTRADO"
+                                              Stat="Null"
+                                    fi
+             
+                                    ip2=$(timeout 2s ping -c 1 "$direciona_url_ping"   | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1) >null
+
+                                    if [[ "$ip2" =~ [0-9] ]]
+                                          then
+                                               timeout 2s ping -c 1 "$direciona_url_ping"  >null    
+                                               if [ $? -eq 0 ]
+                                                  then
+                                                      Stat2="Up2"
+                                                  else
+                                                       Stat2="Down"
+                                               fi
+                                          else
+                                                 ip2="NAO ENCONTRADO"
+                                                 Stat2="Null"
+                                   fi
+                              fi
+
+
+
+                              if [ "$status_http" != "301" ] && [ "$status_http" != "302" ]
+                                then 
+                         		echo "Dominio...............: [$b]" >> Relatorio-$minhadata
+                         		email_sub=$(whois "$b" | egrep   "abuse@|@")
+                         		direciona_full=Null
+                         		direciona_url_ping=Null  
+                         		ip2=Null   
+                         		Stat2=Null
+                      
+
+                       
+                         ip=$(timeout 2s ping -c 1 "$b"  | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1) 
+                        if [[ "$ip" =~ [0-9] ]]
+                          then 
+                              timeout 2s ping -c 1 "$b" >null
+                             if [ $? -eq 0 ]
+                                then
+                                   Stat="Upppp"
+                                else
+                                   Stat="Down"
+                             fi
+                          else
+                           ip="IP NAO ENCONTRADO"
+                           Stat="Null"
+                      fi
+                   fi
+
+              echo -e "Registro do Dominio.....: [$http]" >> Relatorio-$minhadata
+              echo "==============================================">> Relatorio-$minhadata
+              echo  -e "\n">> Relatorio-$minhadata
+              echo "IP do Dominio.. ......: [$ip] e [$Stat]">> Relatorio-$minhadata
+              echo "HTTP..................: [$status_http]">> Relatorio-$minhadata
+              echo "Redirecionamento Ativo: [$ATIVO]">> Relatorio-$minhadata
+              echo "Redirecionamento......: $direciona_full">> Relatorio-$minhadata
+              echo "ICMP.Redirecionamento.: [$direciona_url_ping] [$ip2]  [$Stat2]">> Relatorio-$minhadata
+              ############# SUB DOMINIO SIMPLES #############
+              for a in $(tac Result_Sublist3r)
+                 do
+                    if [[ "$a" =~ "[" ]]
+                          then
+                             break
+                           else
+                             if [[ "$a" =~ "Error:" ]] ; then break ; fi
+                              timeout 1s timeout 2s ping -c 1 "$a" 
+                                ip2=$(timeout 2s ping -c 1 "$a"  | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+                              timeout 1s ping -c 1 "$a" >null
+                                if [ $? -eq 0 ]
+                                   then
+                                      echo -e "\033[01;32m Sub_Dominio..........:\033[01;37m [UP..] [$ip2] [$a]" >> Relatorio-$minhadata
+                                   else
+                                      echo -e "\033[01;32m Sub_Dominio..........:\033[01;37m [Down] [$ip2] [$a]" >> Relatorio-$minhadata
+                                 fi
+
+                     fi
+
+                done
+
+              ############## FIM DO SUBDOMINIO DETALLHADO #######
+
+              echo "Dominio Criado em.....: [$data_criado]">> Relatorio-$minhadata
+              echo "Dominio Expira em.....: [$data_expira]">> Relatorio-$minhadata
+              echo "E-mail................: [$email_abuse]">> Relatorio-$minhadata
+              echo "View Port..User-Agent.: [$view]">> Relatorio-$minhadata
+              #echo -e "\n">> Relatorio-$minhadata
+              echo "Referencia Encontrada : [$evidencia]">> Relatorio-$minhadata
+              echo "*************************************************" >> Relatorio-$minhadata
+              echo "*             ---- Fim da Analise ----          *" >> Relatorio-$minhadata
+              echo "*************************************************" >>Relatorio-$minhadata
+                
+              echo -e "\n\n\n" >> Relatorio-$minhadata
+
+         #fi  #Achei !!
+         let linha=linha-1
+         let i=i+1
+        # let j=j+1
+
+
+         ################ CSV #####################
+              CSV=$b$http$ip$Stat$status_http$ATIVO$direciona_full$direciona_url_ping$ip2$Stat2$sub_dominio$data_criacao$data_expira$email_abuse$view$evidencia  
+              echo $CSV >> SIEM
+
+
+     
+      #sleep 10
+      done| zenity --progress  --pulsate --no-cancel  --width 500  --title="Analise Full"
+
+
+
+                        else
+               		  if [ "$resp" = "2" ]
+                             then
+                                 #echo > log
+                                 #echo  > Result_Sublist3r
+                                 clear
+                                 figlet No-Phishing
+                                 linha=$(cat List_fqdn | wc -l)
+
+                                 echo -e " Individual\n"
+                  		 ind=$(zenity --title  "Consulta Individual" --width="500" --text "Digite o Dominio" --entry)
+	                         valor2=$ind
+                                 for b in $valor2
+                                    do
+                                       direciona_url=$(curl -Is --connect-timeout 2,3 "$b" | egrep -i "Location|ocaticon" | cut -d ":" -f3 | cut -d "/" -f3,3 | sed "s/www.//g")
+         			       direciona_full=$(curl -Is --connect-timeout 2,3 "$b" | egrep -i "Location|ocaticon" |cut -d " " -f2)
+         			       direciona_url_ping=$(curl -Is --connect-timeout 2,3 "$b" | egrep -i "Location|ocaticon" | cut -d ":" -f3 | cut -d "/" -f3,3 | sed "s/www.//g")
+				       status_http=$(curl -Is --connect-timeout 2,3 "$b" | head  -1 | awk -F " " '{print $2}')
+         			       status_whois=$(whois "$b" | egrep -i "clientHold|Clienthold|ClienteHold|clientehold")
+         			       data_creacao=$(whois "$b" | grep -i "Creation Date" | cut -d " " -f3)
+         			       email_abuse=$(whois "$b" | egrep   "abuse@|@" | cut -d ":" -f2 )
+         			       qualquercoisa=$(whois  "$b" | egrep -i "Creation|reation|abuse|status|atus|Freedom Registry|Freedom|gistere|ameserver")
+         			       location_http=$(curl -Is --connect-timeout 2,3 "$direciona_url" | head -1 | awk -F " " '{print $2}')
+         			       url_no_body=$(curl -Ls "$b" --connect-timeout 2,3 | grep "href=htt" | cut -d  ":" -f2 | sort)
+         			       data_expira=$(whois "$b" | grep -i "Expiry" | grep "xpir" | cut -d ":" -f2)
+         			       data_criado=$(whois "$b" | egrep -i "Creation Date:|created|creation" |cut -d ":" -f2 | head -1)
+                                       freemon=$(curl -s "$b" --connect-timeout 2,3 | grep "domain.dot.tk" | cut -d ":" -f2)
+                                       evidencia=$(curl -sL "$b" --connect-timeout 2,3 | grep "stone" | awk -F ' " ' '{print $1}' | head -n5)
+                                       view=$(curl -Ls "$b" --connect-timeout 2,3 | grep "viewport")
+                                       notexist=$(whois "$b" | egrep -i "no match|not found" )
+				
+                                      if [ -z $status_http ] ; then  status_http="NAO ENCONTRADO" ; fi
+        			      if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ] ; then  ATIVO="SIM" ; else ATIVO="NAO" ; fi
+        			      if [[ -z $direciona_url ]] ; then direciona_url="NAO ENCONTRADO" ; fi
+        			      if [[ -z $evidencia ]] ; then evidencia="NAO ENCONTRADO" ; fi
+                                      if [[ -z $data_criado ]] ; then data_criado="NAO ENCONTRADO" ; fi
+                                      if [[ -z $data_expira ]] ; then data_expira="NAO ENCONTRADO" ; fi
+                                      if [[ -z $email_abuse ]] ; then email_abuse="NAO ENCONTRADO" ; fi
+
+				      echo -e "Faltam ser Verificadas ................:[$linha]"
+                                      echo -e "Hora .........:" $(date)
+         			      echo -e "Dominio Que Sera  Analisado Pela Ferramenta:\n"
+                                      echo  -e "-------->\033[37;5m  $b  \033[0m"
+                                      echo "___________________________________________"
+
+                                      if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ]
+                                          then
+                                             a="$direciona_url"
+                                      fi
+
+				     # if [ -z "$notexist" ]
+           			#	  then
+              			#		http="DOMINIO NAO ENCONTRADO"
+          			#	  else
+              			 #            if [ -n "$status_whois" ]  #  se tiver informacao  é verdadeiro
+                 		#		then
+                    		#		     http=" \033[41;1;37m TAKE DOWN \033[0m" #  acho o hold
+                 		#		else
+                                 #                    if [ -n "$qualquercoisa" ] 
+                     		#		          then
+                        	#				 http="\033[42;1;37m REGISTRO ATIVO   \033[0m "
+                                 #                          else
+                        					 http="DOMINIO NAO ENCONTRADO"
+                                #                     fi
+                                 #            fi
+                                  #    fi
+        #if [ "$resp" -eq 2 ]
+         #  then
+              if [[ "$status_http"  = "301" ]] || [[ "$status_http" = "302" ]] && [[ "$direciona_url" =~ [a-z] ]]
+
+         	 then
+				                      readarray=A
+                      				      readarray=b
+                                                      readarray=c
+                                                      readarray=d
+   						      resp1=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f1 )
+   						      resp2=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f2  )
+   						      resp3=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f3  )
+   						      resp4=$(echo "$direciona_url" | cut -d "/" -f3,5 | cut -d "." -f4 )
+   						      A[0]=$resp1
+   						      b[0]=$resp2
+   						      c[0]=$resp3
+   						      d[0]=$resp4
+  						      Q1=${#resp1}
+  						      Q2=${#resp2}
+  						      Q3=${#resp3}
+  						      Q4=${#resp4}
+                                                      if [ $Q4 = 0 ]
+   							  then
+     								if [ $Q3 =  0 ]
+       									 then
+          						           	     tudoQ3=("${A[@]}"".""${b[@]}")
+          								     var=${tudoQ3[@]}
+                                                                          else
+          									if [ $Q2 -le 3 ]
+            									    then
+              										tudoQ2b=("${A[@]}"".""${b[@]}"".""${c[@]}")
+             										var=${tudoQ2b[@]}
+									            else
+             										tudoQ2a=("${b[@]}"".""${c[@]}")
+             										var=${tudoQ2a[@]}
+									        fi
+                                                               fi
+                                                            direciona_url=$var
+                                                          else
+                                                              tudoQ4=("${b[@]}"".""${c[@]}"".""${d[@]}")
+                                                              var=${tudoQ4[@]}
+                                                              direciona_url=$var
+                                                     fi
+                                                    # direciona_url=$var
+                        fi
+
+                                 if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ]
+          		            then
+                                       status_whois=$(whois "$direciona_url" | egrep -i "clientHold|Clienthold|ClienteHold|clientehold" ) 
+                                       qualquercoisa=$(whois  "$direciona_url" | egrep -i "Creation|reation|abuse|status|atus|Freedom Registry|Freedom|gistere|ameserver")
+                                       notexist=$(whois "$direciona_url" | egrep -i "no match|not found" )
+
+              			       sub=$(/opt/Sublist3r/sublist3r.py -v -d $direciona_url >log 2>logerro)
+             			       sub=$(/opt/Sublist3r/sublist3r.py -v -n -d $direciona_url >Result_Sublist3r 2>logerro)
+          			    else
+              			       sub=$(/opt/Sublist3r/sublist3r.py -v -d $b >log 2>logerro)
+              			      sub=$(/opt/Sublist3r/sublist3r.py -v -n -d $b >Result_Sublist3r 2>logerro)
+        			  fi
+
+
+
+  			        # status_whois=$(whois "$direciona_url" | egrep -i "clientHold|Clienthold|ClienteHold|clientehold" ) 
+          			# qualquercoisa=$(whois  "$direciona_url" | egrep -i "Creation|reation|abuse|status|atus|Freedom Registry|Freedom|gistere|ameserver")      
+                                # notexist=$(whois "$direciona_url" | egrep -i "no match|not found" )
+
+
+				if [ -n "$notexist" ]
+          				 then
+             					 http="DOMINIO NAO ENCONTRADO"
+           				 else
+              					if [ -n "$status_whois" ]  #  se tiver informacao  é verdadeiro
+                 					then
+                    			                     http=" \033[41;1;37m TAKE DOWN \033[0m" #  acho o hold
+               					        else
+                				           if [ -n "$qualquercoisa" ] 
+                     					      then
+                                                                  http="\033[42;1;37m REGISTRO ATIVO   \033[0m "
+                                                              else
+                         					  http="DOMINIO NAO ENCONTRADO"
+                                                           fi
+                                                 fi
+                                fi
+
+
+                         if [ "$status_http"  = "301" ] || [ "$status_http" = "302" ]
+                                then
+                                   #  flag=1
+                                   ip=$(timeout 1s ping -c 1 "$direciona_url"  | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+                                    echo "Dominio...............: [$direciona_url]"
+                                    email_sub=$(whois "$direciona_url" | egrep   "abuse@|@")
+                           
+                              timeout 2s ping -c 1 "$direciona_url" >null   
+                               if [ $? -eq 0 ]
+                                   then
+                                       Stat="Up1"
+                                   else
+                                       Stat="Down"
+                               fi
+                       
+                             ip2=$(timeout 2s ping -c 1 "$direciona_url_ping" | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+                             timeout 1s ping -c 1 "$direciona_url_ping"  >null
+                             if [ $? -eq 0 ]
+                                 then
+                                    Stat2="Up2"
+                                 else
+                                    Stat2="Down"
+                             fi
+                        fi
+                  #else  # senao for 301
+                   if [ "$status_http" != "301" ] && [ "$status_http" != "302" ]
+                      then 
+                       #flag=2
+                       echo "Dominio...............: [$b]"
+                       email_sub=$(whois "$b" | egrep   "abuse@|@")
+                      
+                      
+		      direciona_full=Null
+                      direciona_url_ping=Null  
+                      ip2=Null   
+                      Stat2=Null
+                      ip=$(timeout 1s ping -c 1 "$b" | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+                      timeout 2s ping -c 1 "$b" >log_erro_ping  
+                      if [ $? -eq 0 ]
+                        then
+                            Stat="Upppp"
+                         else
+                            Stat="Down"
+                      fi
+                   fi
+           # fi # e o fim do 301
+
+              # REPORT DA OPCAO 2
+
+                            
+              echo -e "Registro do Dominio.....: [$http]"
+              echo "=============================================="
+              echo  -e "\n"
+              echo "IP do Dominio.. ......: [$ip] e [$Stat]"
+              echo "HTTP..................: [$status_http]"
+              echo "Redirecionamento Ativo: [$ATIVO]"
+              echo "Redirecionamento......: $direciona_full"
+              echo "ICMP.Redirecionamento.: [$direciona_url_ping] [$ip2]  [$Stat2]"
+              ############# SUB DOMINIO SIMPLES #############
+             
+            #   for b in $(tac log)
+             #    do
+              #     SUB='['
+               #    if [[ "$b" =~ "$SUB" ]]
+                #      then
+                 #       vetor[1]="$b"
+                  #      echo "$b" >> sub_01
+                   #     sub_dominio=${vetor[1]}
+                    #    echo -e "\033[37;1m Sub_Dominio..........: [$sub_dominio] \033[m"
+                     #   else
+                      #  break
+                 #  fi
+               #  done
+                 
+                ############# SUB DOMINIO SIMPLES #############
+              for a in $(tac Result_Sublist3r)
+                 do
+                    if [[ "$a" =~ "[" ]]
+                          then
+                             break
+                           else
+                             if [[ "$a" =~ "Error:" ]] ; then break ; fi
+                                timeout 1s ping -c 1 "$a" > null
+                                #ip2=$(timeout 2s ping -c 1 "$a" | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+                                timeout 1s ping -c 1 "$a"  > null 
+                                if [ $? -eq 0 ]
+                                   then
+                                      ip2=$(timeout 2s ping -c 1 "$a" | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+
+                                      echo -e "\033[01;32m Sub_Dominio..........:\033[01;37m [UP.4] [$ip2] [$a]" 
+                                      
+                                   else
+                                      ip2=$(timeout 2s ping -c 1 "$a" | grep "PING" | awk -F "(" '{print $2}'| cut -d ")" -f1)
+
+                                      echo -e "\033[01;32m Sub_Dominio..........:\033[01;37m [Down] [$ip2] [$a]" 
+                                 fi
+
+                     fi
+
+                done
+
+
+
+              ################# FIM DO SUBDOMINIO SIMPLES ###########
+                
+
+
+
+              echo "Dominio Criado em.....: [$data_criado]"
+              echo "Dominio Expira em.....: [$data_expira]"
+              echo "E-mail................: [$email_abuse]"
+              echo "View Port..User-Agent.: [$view]"
+              echo -e "\n"
+              echo "Referencia Encontrada : [$evidencia]"
+
+              echo ".."
+
+         #fi  #Achei !!
+         let linha=linha-1
+         let i=i+1
+         read kkkk
+        # break
+   done               
+ #break;
+              else
+                 if  [ "$resp" = "3" ]
+                   then
+                     #ls -la | grep Relatorio  # | zenity --list --column "mostra diretorio"
+                     dir=$(zenity --file-selection --filename=Relatorio-2020-12-15)
+                     conteudo=$dir
+                     cat $conteudo
+                     zenity --info  --text="Role a tela "
+                     echo -n "[ENTER] para sair"; read syz
+                   else
+                     if [ "$resp" = "4" ]
+                        then
+                           new=List_fqdn
+                           #clear
+                           zenity --text-info --editable --title="Cons/Alter/Excl de Dominios" --filename=$new
+                        else
+                           if [ "$resp" = "5" ]
+                             then
+                               clear
+                               dir=$(zenity --file-selection)
+                               conteudo=$dir
+                               cat $conteudo
+                               read xyz
+                             else
+                              if [ "$resp" = "6" ]
+                                 then
+                                    clear
+                                    echo " Relatorio "
+                                    linha=$(cat List_fqdn | wc -l)
+                                    valor=$(cat List_fqdn)
+                                    figlet No-Phishing
+                                    echo  -e "\n"
+                                    echo -n "Digite o Dominio para add a lista " ; read fqdn
+                                    echo -n "Confirma [S] ?" ; read confirma
+                                       if [ "$confirma" = "s" ] || [ "$confirma" = "S" ]
+                                          then
+                                             echo $fqdn >> List_fqdn
+                                             echo -n "digite enter >>>" ; W=read enter
+                                             clear
+                                           else
+                                             clear
+                                             echo "Errado"
+                                      fi
+                             fi
+                          fi
+                    fi
+           fi
+         fi
+       fi
+     done;
+# fi
+done
